@@ -81,6 +81,22 @@ async function postNewProperties() {
   }
 }
 
+async function postResultsIntoHTML(){
+  const aparts = await getProperties(); // Замените это функцией получения данных
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '<ul>' + aparts.map(property =>
+    `<li>${property.address}: ${property.price} - ${property.area} - ${property.rums} - <a href="${property.link}">Ссылка</a></li>`
+  ).join('') + '</ul>';
+}
+
+async function getProperties() {
+  const apartments = await apartmentVariants();
+  // Это просто пример, возвращающий фиктивные данные
+  return [
+    { address: apartments.address, price: apartments.price, area: apartments.area, rums: apartments.rums, link: apartments.link },
+  ];
+}
+
 // Обработчик для команды /showMe
 bot.onText(/\/newApparts|\/command1/, () => {
   bot.sendMessage(chatId, 'Ушел искать новые варианты!');
