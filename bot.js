@@ -4,7 +4,7 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.CHAT_ID;
-const price = 3500000;
+const price = 2500000;
 const livingArea = 40;
 const rooms = 1.5;
 const hemnetSite = `https://www.hemnet.se/bostader?price_max=${price}&living_area_min=${livingArea}&rooms_min=${rooms}&item_types%5B%5D=bostadsratt&location_ids%5B%5D=18028`
@@ -12,7 +12,7 @@ const bot = new TelegramBot(token, { polling: true });
 
 async function apartmentVariants() {
   const browser = await chromium.launch({
-    headless: true
+    headless: false
   });
   const page = await browser.newPage();
   try {
@@ -60,10 +60,16 @@ async function apartmentVariants() {
 }
 
 async function postNewProperties() {
+  const today = new Date();
+  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const year = today.getFullYear();
+
   const properties = await apartmentVariants();
+  await bot.sendMessage(chatId, `Новые квартиры за сегодня \n${day}/${month}/${year}`);
 
   for (const property of properties) {
-    if ( properties[property.address]) {
+    if ( properties[property.address] ) {
       console.log('Уже есть такая квартира');
       console.log(
         property.address,
@@ -76,7 +82,7 @@ async function postNewProperties() {
 }
 
 // Обработчик для команды /showMe
-bot.onText(/\/newApparts/, () => {
+bot.onText(/\/newApparts|\/command1/, () => {
   bot.sendMessage(chatId, 'Ушел искать новые варианты!');
   postNewProperties();
 });
