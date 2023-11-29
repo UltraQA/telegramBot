@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 const { chromium } = require('playwright');
 const TelegramBot = require('node-telegram-bot-api');
 
@@ -11,7 +11,9 @@ const hemnetSite = `https://www.hemnet.se/bostader?price_max=${price}&living_are
 const bot = new TelegramBot(token, { polling: true });
 
 async function apartmentVariants() {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({
+    headless: true
+  });
   const page = await browser.newPage();
   try {
     await page.goto(hemnetSite);
